@@ -1,21 +1,9 @@
-#include <sdl.h>
 #include <SDL.h>
 #include <SDL_image.h>
+#include "globals.h"
+#include "sprite.h"
+#include "entity.h"
 #define black_	0x000000
-typedef enum { false, true } bool;
-//Screen dimension constants
-const int SCREEN_WIDTH = 800;
-const int SCREEN_HEIGHT = 600;
-
-//dimensions of warrior
-const int WAR_HEIGHT = 32;
-const int WAR_WIDTH = 32;
-
-//direction of sprite
-const int WAR_RIGHT = 0;
-const int WAR_LEFT = 1;
-const int WAR_UP = 2;
-const int WAR_DOWN = 3;
 
 SDL_Rect heroRect;
 //The images that correspond to a keypress 
@@ -24,24 +12,15 @@ SDL_Rect heroRect;
 //reference to SDL_Surface
 SDL_Surface* Screen; 
 SDL_Surface* oworld;
+SDL_Surface* fmap;
 SDL_Surface* wa;
 //event variable
 SDL_Event e;
-
+Entity_T *ent;
 //sprite sides
 SDL_Rect clipsRight[ 4 ];
 SDL_Rect clipsLeft[ 4 ];
 
-//Key press surfaces constants
-enum KeyPressSurfaces
-{
-	KEY_PRESS_SURFACE_DEFAULT,
-	KEY_PRESS_SURFACE_UP,
-	KEY_PRESS_SURFACE_DOWN,
-	KEY_PRESS_SURFACE_LEFT,
-	KEY_PRESS_SURFACE_RIGHT,
-	KEY_PRESS_SURFACE_TOTAL
-};
 
 	//init varis
 	//The offset 
@@ -76,10 +55,6 @@ void War()
 	//Init animation variables
 	frame = 0;
 	status = WAR_RIGHT;
-}
-void touch_door()
-{
-	
 }
 bool is_Collided(SDL_Rect a, SDL_Rect b)
 {
@@ -134,10 +109,11 @@ void move()
 }
 void load_battle()
 {
-	oworld = IMG_Load("BattleMap1.png");
+	fmap = IMG_Load("BattleMap1.png");
 
 }
-void load_map2(){
+void load_map2()
+{
 	oworld = IMG_Load("Overworld1.png");
 }
 void show()
@@ -178,10 +154,10 @@ void handle_events()
 		//Set the proper message surface
 		switch( e.key.keysym.sym )
 		{
-		    case SDLK_UP: heroRect.y -= 53; break;
-		    case SDLK_DOWN: heroRect.y += 53; break;
-			case SDLK_LEFT: heroRect.x -= 53; break;
-			case SDLK_RIGHT: heroRect.x += 53; break;
+			case SDLK_UP: ent->bBox.y -= 25; printf("%d y \n", ent->bBox.y); break;
+		    case SDLK_DOWN: ent->bBox.y += 25; printf("%d y \n", ent->bBox.y); break;
+			case SDLK_LEFT: ent->bBox.x -= 25; printf("%d x \n", ent->bBox.x); break;
+			case SDLK_RIGHT: ent->bBox.x += 25; printf("%d x \n", ent->bBox.x); break;
 		}			
 	}
 }
@@ -252,17 +228,43 @@ void set_clips()
 int main (int argc,char* argv[]) //ran after SDL main
 {
 	int quit;
+	SDL_Rect box;
+	SDL_Rect door;
+	Sprite_T *s;
+	Entity_T *doorEnt;
 	SDL_Init(SDL_INIT_EVERYTHING); //inits everything for sdl
 	Screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT,32,SDL_SWSURFACE); //sets the size of window. SDL_SWSurface makes the Software handle the graphics
 	oworld = IMG_Load("Overworld1.png");
 	
+	
+	box.x = 32;
+	box.y = 0;
+	box.w = 32;
+	box.h = 32;
+	s = SetupSprite("warrior.png", box);
+	box.w = 32;
+	box.h = 32;
+	box.x = 128;
+	box.y = 128;
+	ent = SetupEntity(s, box);
+	
+	door.x = 752;
+	door.y = 265;
+	s=SetupSprite("door.png",door);
+	door.w = 50;
+	door.h = 50;
+	doorEnt = SetupEntity(NULL,door);
+
+	if(is_Collided(box, door))
+	{
+		fprintf(stdout,"true");
+	}
+
 	quit = false;
 
 	set_clips();
-	
-	load_files();
 
-	if(load_files == false)
+	if(load_files() == false)
 	{
 		return 1;
 	}
@@ -278,12 +280,17 @@ int main (int argc,char* argv[]) //ran after SDL main
 				quit = true;
 			}
 			handle_events();
+			if(heroRect.x == 742 && heroRect.y == 265)
+			{
+				load_battle();
+			}
 			//clears the screen for next frame
 			SDL_FillRect(Screen,NULL, black_);
 		}
 		SDL_BlitSurface(oworld,NULL,Screen,NULL);
 		move();
-		show();
+		//show();
+		DrawEntity(ent);
 		//update it
 		SDL_Flip(Screen);
 		}

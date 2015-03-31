@@ -89,6 +89,7 @@
     <ClCompile Include="main.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="defines.h" />
     <ClInclude Include="entity.h" />
     <ClInclude Include="globals.h" />
     <ClInclude Include="sprite.h" />

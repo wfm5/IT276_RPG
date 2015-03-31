@@ -48,7 +48,7 @@ void Free_Ent(Entity_T *self);
 void move(Entity_T *e);
 
 void handle_events();
-//void Init_Position(Entity_T *e);
+void Init_Position(Entity_T *e);
 bool DrawEntity(Entity_T *e);
 Sprite_T *DressUpSprite(char *file, SDL_Rect size);
 Entity_T *DressUpEntity(Sprite_T *s,SDL_Rect box,Entity_T *e);

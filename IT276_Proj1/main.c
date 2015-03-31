@@ -28,7 +28,7 @@ SDL_Rect clipsLeft[ 4 ];
 	//init varis
 	//The offset 
 	int offSet; 
-	
+	int MAP_FLAG;
 	//Its rate of movement 
 	//int velocity = 15; 
 	
@@ -79,12 +79,21 @@ void move(Entity_T *ent)
 }
 void load_battle()
 {
-	fmap = IMG_Load("BattleMap1.png");
-
+	if(MAP_FLAG == 15)
+	{
+	oworld = IMG_Load("BattleMap1.png");
+	MAP_FLAG &= ~1; 
+	fprintf(stdout, "%d",MAP_FLAG);
+	}
 }
 void load_map2()
 {
-	oworld = IMG_Load("Overworld1.png");
+	if(MAP_FLAG == 14)
+	{
+		oworld = IMG_Load("Overworld2.png");
+		MAP_FLAG &= ~2;
+		fprintf(stdout, "%d",MAP_FLAG);
+	}
 }
 /*void show()
 {
@@ -192,7 +201,7 @@ int main (int argc,char* argv[]) //ran after SDL main
 	SDL_Init(SDL_INIT_EVERYTHING); //inits everything for sdl
 	Screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT,32,SDL_SWSURFACE); //sets the size of window. SDL_SWSurface makes the Software handle the graphics
 	oworld = IMG_Load("Overworld1.png");
-	
+	MAP_FLAG = 15;
 	player = Init_Ent();
 	//Init_Position(player);
 	player->width = 32;
@@ -206,13 +215,13 @@ int main (int argc,char* argv[]) //ran after SDL main
 	s = SetupSprite("warrior.png", player->bBox);
 	player->sprite = s;
 	//DressUpEntity(player->sprite, player->bBox, player);
-	player->x = 128;
-	player->y = 128;
+	player->x = 100;
+	player->y = 100;
 	
 	doorEnt = Init_Ent();
 	//Init_Position(doorEnt);
-	door.x = 0;
-	door.y = 0;
+	door.x = 200;
+	door.y = 265;
 
 	doorEnt->bBox.w = 20;
 	doorEnt->bBox.h = 64;
@@ -226,7 +235,7 @@ int main (int argc,char* argv[]) //ran after SDL main
 	door.h = 30;
 
 	quit = false;
-
+	
 	set_clips();
 
 	//if(s)
@@ -251,7 +260,24 @@ int main (int argc,char* argv[]) //ran after SDL main
 			if(is_Collided(player->bBox, doorEnt->bBox))
 			{
 				fprintf(stdout, "entered door\n");
+				if(MAP_FLAG == 15)
+				{
+					load_battle();
+					Init_Position(player);
+				}
+				else if(MAP_FLAG == 14)
+				{
+					load_map2();
+					Init_Position(player);
+				}
+				else
+				{
+					continue;
+				}
+
+				
 			}
+
 
 			//clears the screen for next frame
 			SDL_FillRect(Screen,NULL, black_);

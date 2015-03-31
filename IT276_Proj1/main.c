@@ -95,6 +95,15 @@ void load_map2()
 		fprintf(stdout, "%d",MAP_FLAG);
 	}
 }
+void load_map3()
+{
+	if(MAP_FLAG == 12)
+	{
+		oworld = IMG_Load("Overworld3.png");
+		MAP_FLAG &= ~4;
+		fprintf(stdout, "%d",MAP_FLAG);
+	}
+}
 /*void show()
 {
 	if(velocity < 0)
@@ -269,6 +278,9 @@ int main (int argc,char* argv[]) //ran after SDL main
 				{
 					load_map2();
 					Init_Position(player);
+				}
+				else if(MAP_FLAG == 12){
+					load_map3();
 				}
 				else
 				{

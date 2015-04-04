@@ -54,16 +54,6 @@ void handle_events()
 			case SDLK_RIGHT: player->x += WAR_HEIGHT ; printf("%d x \n", player->x); break;
 		}			
 	}
-	else if ( e.type == SDL_KEYUP )
-	{
-		switch ( e.key.keysym.sym)
-		{
-			case SDLK_UP: player->yVel += player->height ; break;
-			case SDLK_DOWN: player->yVel -= player->height ; break;
-			case SDLK_LEFT: player->xVel += player->width ; break;
-			case SDLK_RIGHT: player->xVel -= player->width; break;
-		}
-	}
 }
 Sprite_T *SetupSprite(char *file, SDL_Rect size)
 {
@@ -97,10 +87,6 @@ void Init_Position(Entity_T *e)
 {
 	e->x = 128;
 	e->y = 128;
-	e->xVel = 0;
-	e->yVel = 0;
-	e->bBox.w = 0;
-	e->bBox.h = 0;
 }
 bool is_Collided(SDL_Rect a, SDL_Rect b)
 {
@@ -122,7 +108,7 @@ bool is_Collided(SDL_Rect a, SDL_Rect b)
 	bottomB = b.y + b.h;
 
  //If any of the sides from A are outside of B 
-	if((a.x + a.w >= b.x) && (a.x <= b.x + b.w) && (a.y + a.h >= b.y) && (a.y <= b.y + b.h))
+	/*if((a.x + a.w >= b.x) && (a.x <= b.x + b.w) && (a.y + a.h >= b.y) && (a.y <= b.y + b.h))
 	{	
 		fprintf(stdout, "its true collided \n");
 		return true;  
@@ -130,7 +116,8 @@ bool is_Collided(SDL_Rect a, SDL_Rect b)
 	fprintf(stdout, "its false no collide \n");
 	fprintf(stdout, "doorX: %d  \n", b.x);
 	fprintf(stdout, "doorY: %d  \n", b.y);
-	return false;/*
+	return false;
+	*/
 	if( bottomA <= topB ) 
 	{ 
 		return false; 
@@ -148,6 +135,6 @@ bool is_Collided(SDL_Rect a, SDL_Rect b)
 		return false; 
 	}
 	//If none of the sides from A are outside B 
-	return true;*/ 
+	return true; 
 }
 //bool check_Collisions(Entity_T *e)

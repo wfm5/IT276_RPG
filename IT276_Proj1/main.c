@@ -231,6 +231,8 @@ int main (int argc,char* argv[]) //ran after SDL main
 	//Init_Position(doorEnt);
 	door.x = 200;
 	door.y = 265;
+	door.w = 20;
+	door.h = 30;
 
 	doorEnt->bBox.w = 20;
 	doorEnt->bBox.h = 64;
@@ -240,8 +242,7 @@ int main (int argc,char* argv[]) //ran after SDL main
 	doorEnt = DressUpEntity(d,door,doorEnt);
 	doorEnt->x = 200;
 	doorEnt->y = 265;
-	door.w = 20;
-	door.h = 30;
+
 
 	quit = false;
 	

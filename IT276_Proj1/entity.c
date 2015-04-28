@@ -7,6 +7,16 @@
 #include "entity.h"
 #include "globals.h"
 
+int NumEntity;
+
+/*void InitEntityList()
+{
+	int x;
+	NumEntity = 0;
+	memset(entityList,0,sizeof(Entity_T) * MAX_ENTITIES);
+	for(x = 0;x < MAX_ENTITIES;x++) 
+		entityList[x] = NULL;
+}*/
 Entity_T *Init_Ent(void)
 {
 	int i;
@@ -20,21 +30,10 @@ Entity_T *Init_Ent(void)
 			ent = &entityList[i];
 			ent->inuse = 1;
 			maxents++;
+			return ent;
 		}
-		else if(maxents < MAX_ENTITIES)
-		{
-			ent = &entityList[maxents++];
-			ent->inuse = 1;
-		}
-		else if(i == maxents)
-		{
-			SDL_Delay(8000);
-			fprintf(stdout,"No more room for Entities\n");
-			exit(1);
-			return 0;
-		}
-		return ent;
 	}
+	return NULL;
 }
 void Free_Ent(Entity_T *owner)
 {
@@ -48,20 +47,14 @@ void handle_events()
 		switch( e.key.keysym.sym )
 		{
 			//PumpEvents
-			case SDLK_UP: player->y -= WAR_HEIGHT ; printf("%d y \n", player->y); break;
-		    case SDLK_DOWN: player->y += WAR_HEIGHT ; printf("%d y \n", player->y); break;
-			case SDLK_LEFT: player->x -= WAR_HEIGHT ; printf("%d x \n", player->x); break;
-			case SDLK_RIGHT: player->x += WAR_HEIGHT ; printf("%d x \n", player->x); break;
+			case SDLK_UP: player->y -= WAR_HEIGHT ; printf("%d y \n", player->bBox); break;
+		    case SDLK_DOWN: player->y += WAR_HEIGHT ; printf("%d y \n", player->bBox); break;
+			case SDLK_LEFT: player->x -= WAR_HEIGHT ; printf("%d x \n", player->bBox); break;
+			case SDLK_RIGHT: player->x += WAR_HEIGHT ; printf("%d x \n", player->bBox); break;
 		}			
 	}
 }
-Sprite_T *SetupSprite(char *file, SDL_Rect size)
-{
-	Sprite_T *sprite = (Sprite_T *)malloc(sizeof(Sprite_T)); //load sprite's memory
-	sprite->img = IMG_Load(file); //load file
-	sprite->size = size; //
-	return sprite;
-}
+
 Entity_T *DressUpEntity(Sprite_T *s, SDL_Rect box, Entity_T *e)
 {
 		//Entity_T *e = (Entity_T *)malloc(sizeof(Entity_T)); //allocates memory for entity
@@ -74,6 +67,7 @@ bool DrawEntity(Entity_T *e)
 {
 	//draws sprites
 	SDL_Rect dst;
+	if (!e)return 0;
 	dst.x = e->x;
 	dst.y = e->y;
 	dst.w = e->sprite->size.w;
@@ -87,6 +81,13 @@ void Init_Position(Entity_T *e)
 {
 	e->x = 128;
 	e->y = 128;
+}
+void Battle_Positions(Entity_T *e)
+{
+	e->x = 200;
+	e->y = 200;
+	fprintf(stdout,"Battle Start \n");
+	//DrawEntity(enemy1)
 }
 bool is_Collided(SDL_Rect a, SDL_Rect b)
 {
@@ -108,16 +109,6 @@ bool is_Collided(SDL_Rect a, SDL_Rect b)
 	bottomB = b.y + b.h;
 
  //If any of the sides from A are outside of B 
-	/*if((a.x + a.w >= b.x) && (a.x <= b.x + b.w) && (a.y + a.h >= b.y) && (a.y <= b.y + b.h))
-	{	
-		fprintf(stdout, "its true collided \n");
-		return true;  
-	}
-	fprintf(stdout, "its false no collide \n");
-	fprintf(stdout, "doorX: %d  \n", b.x);
-	fprintf(stdout, "doorY: %d  \n", b.y);
-	return false;
-	*/
 	if( bottomA <= topB ) 
 	{ 
 		return false; 
@@ -137,4 +128,6 @@ bool is_Collided(SDL_Rect a, SDL_Rect b)
 	//If none of the sides from A are outside B 
 	return true; 
 }
+//void touchButton(Entity_S * self,struct Entity_S * other){
+//}
 //bool check_Collisions(Entity_T *e)

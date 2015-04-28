@@ -1,7 +1,7 @@
 #ifndef __m_ENTITY__
 #define __m_ENTITY__
 #define MAX_ENTITIES 255
-
+#include "sprite.h"
 int maxents;
 
 enum mEntityStates{
@@ -26,7 +26,6 @@ typedef struct Entity_S{
 	Sprite_T		*sprite;
 	SDL_Rect		bBox;
 	float			x,y;
-	float			xVel,yVel;
 	int				width;
 	int				height;
 	struct Entity_S *owner;					//**<pointer to itself*/
@@ -50,8 +49,9 @@ void move(Entity_T *e);
 void handle_events();
 void Init_Position(Entity_T *e);
 bool DrawEntity(Entity_T *e);
-Sprite_T *DressUpSprite(char *file, SDL_Rect size);
+
 Entity_T *DressUpEntity(Sprite_T *s,SDL_Rect box,Entity_T *e);
 //Entity_T *SetupEntity(Sprite_T *s, SDL_Rect box);
 bool is_Collided(SDL_Rect a, SDL_Rect b);
+void Battle_Positions(Entity_T *e);
 #endif

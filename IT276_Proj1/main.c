@@ -4,6 +4,7 @@
 #include "sprite.h"
 #include "entity.h"
 #include "globals.h"
+#include "mouse.h"
 #define black_	0x000000
 
 SDL_Rect heroRect;
@@ -18,49 +19,19 @@ SDL_Surface* wa;
 //event variable
 Entity_T *ent;
 Entity_T *player;
+Entity_T *menu;
+Entity_T *doorEnt;
 SDL_Event e;
 
-//sprite sides
-SDL_Rect clipsRight[ 4 ];
-SDL_Rect clipsLeft[ 4 ];
 
-
-	//init varis
-	//The offset 
-	int offSet; 
-	int MAP_FLAG;
-	//Its rate of movement 
-	//int velocity = 15; 
+int offSet; 
+int MAP_FLAG;
+bool IN_BATTLE;
 	
-	//Its current frame 
-	//int frame; 
-	
-	//Its animation status 
-	//int status; 
-	//Initializes the variables 
-	
-	//Handles input 
-	void handle_events(); 
-	
-	//Moves the stick figure 
-	void move(Entity_T *e); 
-	
-	//Shows the stick figure 
-	void show(); 
-
-
-void War()
-{
-	//Move
-	offSet = 0;
-	//velocity = 0;
-
-	//Init animation variables
-	//frame = 0;
-	//status = WAR_RIGHT;
-}
-
-void move(Entity_T *ent)
+//Handles input 
+void handle_events(); 
+void updateGame();
+/*void move(Entity_T *ent)
 {
 
 	ent->x += ent->xVel;
@@ -76,7 +47,7 @@ void move(Entity_T *ent)
 	{
 		ent->y -= ent->xVel;
 	}
-}
+}*/
 void load_battle()
 {
 	if(MAP_FLAG == 15)
@@ -104,38 +75,22 @@ void load_map3()
 		fprintf(stdout, "%d",MAP_FLAG);
 	}
 }
-/*void show()
-{
-	if(velocity < 0)
-	{
-			status = WAR_LEFT;
-			frame++;
-	}
-	else if(velocity > 0)
-	{
-		status = WAR_RIGHT;
-		frame++;
-	}
-	else
-	{
-		frame = 0;
-	}
-	if(frame >= 4)
-	{
-		frame = 0;
-	}
-	//show it
-	if(status == WAR_RIGHT)
-	{
-		SDL_BlitSurface(wa,NULL,Screen,&heroRect);
-	}
-	else if(status == WAR_LEFT)
-	{
-		SDL_BlitSurface(wa, NULL, Screen, &heroRect);
-	}
-}*/
 
-bool load_files()
+void HandleInput()
+{
+  Uint8 buttons;
+  int x,y;
+  buttons = SDL_GetMouseState(&x,&y);
+  if (buttons)
+  {
+	if(checkClick(menu))
+	{
+		fprintf(stdout,"Clicky");//activate button
+	}
+  }
+}
+
+bool load_files()//USE THIS TO HANDLE SPRITES LATER ON. TAKE A SPRITE AND A VARIABLE AND PUT SPRITE ON VARI
 {
     //Load the sprite sheet
     wa = IMG_Load( "warrior.png" );
@@ -154,63 +109,89 @@ bool load_files()
     return true;
 }
 
-
-void set_clips() 
-{ 
-	//Clip the sprites 
-	clipsRight[ 0 ].x = 0; 
-	clipsRight[ 0 ].y = 0; 
-	clipsRight[ 0 ].w = WAR_WIDTH; 
-	clipsRight[ 0 ].h = WAR_HEIGHT;
-
-	clipsRight[ 1 ].x = WAR_WIDTH; 
-	clipsRight[ 1 ].y = 0; 
-	clipsRight[ 1 ].w = WAR_WIDTH; 
-	clipsRight[ 1 ].h = WAR_HEIGHT; 
-
-	clipsRight[ 2 ].x = WAR_WIDTH * 2; 
-	clipsRight[ 2 ].y = 0; 
-	clipsRight[ 2 ].w = WAR_WIDTH; 
-	clipsRight[ 2 ].h = WAR_HEIGHT;
-
-	clipsRight[ 3 ].x = WAR_WIDTH * 3; 
-	clipsRight[ 3 ].y = 0; 
-	clipsRight[ 3 ].w = WAR_WIDTH; 
-	clipsRight[ 3 ].h = WAR_HEIGHT; 
-
-	clipsLeft[ 0 ].x = 0; 
-	clipsLeft[ 0 ].y = WAR_HEIGHT; 
-	clipsLeft[ 0 ].w = WAR_WIDTH; 
-	clipsLeft[ 0 ].h = WAR_HEIGHT;
-
-	clipsLeft[ 1 ].x = WAR_WIDTH; 
-	clipsLeft[ 1 ].y = WAR_HEIGHT; 
-	clipsLeft[ 1 ].w = WAR_WIDTH; 
-	clipsLeft[ 1 ].h = WAR_HEIGHT; 
-
-	clipsLeft[ 2 ].x = WAR_WIDTH * 2; 
-	clipsLeft[ 2 ].y = WAR_HEIGHT; 
-	clipsLeft[ 2 ].w = WAR_WIDTH; 
-	clipsLeft[ 2 ].h = WAR_HEIGHT; 
-
-	clipsLeft[ 3 ].x = WAR_WIDTH * 3; 
-	clipsLeft[ 3 ].y = WAR_HEIGHT; 
-	clipsLeft[ 3 ].w = WAR_WIDTH; 
-	clipsLeft[ 3 ].h = WAR_HEIGHT; 
+void updateGame()
+{
+	mouseThink();
+	if(is_Collided(player->bBox, doorEnt->bBox))
+	{
+		fprintf(stdout, "entered door\n");
+		if(MAP_FLAG == 15)
+		{
+			IN_BATTLE = true;
+			load_battle();
+			Battle_Positions(player);
+		}
+		else if(MAP_FLAG == 14)
+		{
+			IN_BATTLE = false;
+			load_map2();
+			Init_Position(player);
+		}
+		else if(MAP_FLAG == 12)
+		{
+			load_map3();
+		}
+		else
+		{
+			return;
+		}
+	}
+	if(mouseHover(menu->x,menu->y,menu->width,menu->height))
+	{
+		fprintf(stdout,"its over boy \n");
+	}else
+	{
+		fprintf(stdout, "it was false line 144\n");
+	}
+}
+void DrawGame()
+{
+		SDL_BlitSurface(oworld,NULL,Screen,NULL);
+		DrawEntity(player);
+		DrawEntity(doorEnt);
+		if(IN_BATTLE == true)
+		{ 
+			DrawEntity(menu);
+		}
+		DrawMouse(); //turn off the mouse
+		//update it
+		SDL_Flip(Screen);
+		SDL_FillRect(Screen,NULL, black_); //clears the screen for next frame
+}
+void CleanUpAll()
+{
+	CloseSprites();
+/*any other cleanup functions can be added here*/
 }
 
+void Init_All()
+{
+	SDL_Init(SDL_INIT_EVERYTHING); //inits everything for sdl
+	//InitEntityList();
+	InitSpriteList();
+	InitMouse();	
+	atexit(CleanUpAll);
+	
+}
 int main (int argc,char* argv[]) //ran after SDL main
 {
 	int quit;
-	SDL_Rect playerRect;
+//	SDL_Rect playerRect;
 	SDL_Rect door;
+	SDL_Rect Abutton;
+	SDL_Rect enemyRect;
 	Sprite_T *s;
 	Sprite_T *d;
-	Entity_T *doorEnt;
-	SDL_Init(SDL_INIT_EVERYTHING); //inits everything for sdl
+	Sprite_T *enemy;
+	Sprite_T *button;
+	IN_BATTLE = false;
+	
+	Init_All();
+
 	Screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT,32,SDL_SWSURFACE); //sets the size of window. SDL_SWSurface makes the Software handle the graphics
 	oworld = IMG_Load("Overworld1.png");
 	MAP_FLAG = 15;
+
 	player = Init_Ent();
 	//Init_Position(player);
 	player->width = 32;
@@ -221,39 +202,43 @@ int main (int argc,char* argv[]) //ran after SDL main
 	player->bBox.w = 31;
 	player->bBox.h = 32;
 
-	s = SetupSprite("warrior.png", player->bBox);
-	player->sprite = s;
+	player->sprite = SetupSprite("warrior.png", player->bBox);;
 	//DressUpEntity(player->sprite, player->bBox, player);
 	player->x = 100;
 	player->y = 100;
 	
-	doorEnt = Init_Ent();
-	//Init_Position(doorEnt);
-	door.x = 200;
+	door.x = 770;
 	door.y = 265;
 	door.w = 20;
 	door.h = 30;
 
+	doorEnt = Init_Ent();
 	doorEnt->bBox.w = 20;
 	doorEnt->bBox.h = 64;
 
 	d = SetupSprite("door.png",door);
-	//doorEnt->sprite = d;
+
 	doorEnt = DressUpEntity(d,door,doorEnt);
-	doorEnt->x = 200;
+	doorEnt->x = 770;
 	doorEnt->y = 265;
 
+	menu = Init_Ent();
+	Abutton.x = 220;
+	Abutton.y = 190;
+	Abutton.h = 32;
+	Abutton.w = 60;
 
+	menu->bBox.w = 60;
+	menu->bBox.h = 32;
+
+	button = SetupSprite("button_attack.png",menu->bBox);
+	menu->sprite = button;
+	menu = DressUpEntity(button,Abutton,menu);
+	menu->x = 158;
+	menu->y = 98;
+	//LoadSprite("mouse.png",16,16);
 	quit = false;
-	
-	set_clips();
 
-	//if(s)
-//	{
-	//	fprintf(stdout, "no player sprite \n");
-		//return 0;
-	//}
-	
 	while(!quit){
 		//event loop
 		while(SDL_PollEvent(&e) != 0)
@@ -263,49 +248,12 @@ int main (int argc,char* argv[]) //ran after SDL main
 			{
 				quit = true;
 			}
-			//SDL_PumpEvents();
+			HandleInput();
 			handle_events();
-			//move(player);
-
-			if(is_Collided(player->bBox, doorEnt->bBox))
-			{
-				fprintf(stdout, "entered door\n");
-				if(MAP_FLAG == 15)
-				{
-					load_battle();
-					Init_Position(player);
-				}
-				else if(MAP_FLAG == 14)
-				{
-					load_map2();
-					Init_Position(player);
-				}
-				else if(MAP_FLAG == 12){
-					load_map3();
-				}
-				else
-				{
-					continue;
-				}
-
-				
-			}
-
-
-			//clears the screen for next frame
-			SDL_FillRect(Screen,NULL, black_);
+			updateGame();
+			DrawGame();
 		}
-		//show();
-		SDL_BlitSurface(oworld,NULL,Screen,NULL);
-		//move(player);
-		DrawEntity(player);
-		Free_Ent(player);
-		DrawEntity(doorEnt);
-		
-		//update it
-		SDL_Flip(Screen);
-		}
-
+	}
 	SDL_FreeSurface(Screen); //clean up frees data
 	SDL_Quit(); //closes window
 	return 0;

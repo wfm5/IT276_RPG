@@ -48,6 +48,7 @@
     <IncludePath>C:\Libraries\SDL-1.2.15\include;C:\Libraries\SDL_ttf-2.0.11\include;C:\Libraries\SDL_net-1.2.8\include;C:\Libraries\SDL_mixer-1.2.12\include;C:\Libraries\SDL_image-1.2.12\include;$(IncludePath)</IncludePath>
     <ReferencePath>C:\Libraries\SDL-1.2.15\lib\x86;C:\Libraries\SDL_ttf-2.0.11\lib\x86;C:\Libraries\SDL_net-1.2.8\lib\x86;C:\Libraries\SDL_mixer-1.2.12\lib\x86;C:\Libraries\SDL_image-1.2.12\lib\x86;$(ReferencePath)</ReferencePath>
     <LibraryPath>C:\Libraries\SDL-1.2.15\lib\x86;C:\Libraries\SDL_ttf-2.0.11\lib\x86;C:\Libraries\SDL_net-1.2.8\lib\x86;C:\Libraries\SDL_mixer-1.2.12\lib\x86;C:\Libraries\SDL_image-1.2.12\lib\x86;$(LibraryPath)</LibraryPath>
+    <OutDir>C:\IT276_Proj1\IT276_Proj1</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -87,11 +88,14 @@
     <ClCompile Include="entity.c" />
     <ClCompile Include="graphics.c" />
     <ClCompile Include="main.c" />
+    <ClCompile Include="mouse.c" />
+    <ClCompile Include="Sprite.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="defines.h" />
     <ClInclude Include="entity.h" />
     <ClInclude Include="globals.h" />
+    <ClInclude Include="mouse.h" />
     <ClInclude Include="sprite.h" />
   </ItemGroup>
   <ItemGroup>

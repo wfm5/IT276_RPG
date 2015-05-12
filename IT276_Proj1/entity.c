@@ -49,10 +49,10 @@ void handle_events()
 		switch( e.key.keysym.sym )
 		{
 			//PumpEvents
-		case SDLK_UP: ((Enemy_T*)Player)->entity->y -= WAR_HEIGHT ; printf("%d y \n", ((Enemy_T*)Player)->entity->bBox); break;
-		case SDLK_DOWN: ((Enemy_T*)Player)->entity->y += WAR_HEIGHT ; printf("%d y \n", ((Enemy_T*)Player)->entity->bBox); break;
-		case SDLK_LEFT: ((Enemy_T*)Player)->entity->x -= WAR_HEIGHT ; printf("%d x \n", ((Enemy_T*)Player)->entity->bBox); break;
-			case SDLK_RIGHT: ((Enemy_T*)Player)->entity->x += WAR_HEIGHT ; printf("%d x \n", ((Enemy_T*)Player)->entity->bBox); break;
+			case SDLK_UP: ((Enemy_T*)Player)->entity->y -= WAR_HEIGHT ;  break;
+			case SDLK_DOWN: ((Enemy_T*)Player)->entity->y += WAR_HEIGHT ; break;
+			case SDLK_LEFT: ((Enemy_T*)Player)->entity->x -= WAR_HEIGHT ; break;
+			case SDLK_RIGHT: ((Enemy_T*)Player)->entity->x += WAR_HEIGHT ;  break;
 		}			
 	}
 }

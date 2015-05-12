@@ -81,6 +81,4 @@ void Death(Enemy_T *self)
 			fprintf(stdout, "Game Over \n");
 		}
 	}
-
-
 }

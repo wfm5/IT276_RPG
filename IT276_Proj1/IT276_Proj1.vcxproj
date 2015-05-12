@@ -87,7 +87,6 @@
   <ItemGroup>
     <ClCompile Include="enemy.c" />
     <ClCompile Include="entity.c" />
-    <ClCompile Include="graphics.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="mouse.c" />
     <ClCompile Include="Sprite.c" />

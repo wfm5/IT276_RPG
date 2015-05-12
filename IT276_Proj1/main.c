@@ -14,12 +14,10 @@ SDL_Rect heroRect;
 //reference to SDL_Surface
 SDL_Surface* Screen;
 SDL_Surface* oworld;
-SDL_Surface* fmap;
 
 
 //event variable
 Entity_T *ent;
-//Entity_T *player;
 Enemy_T *Player;
 Enemy_T *Pig;
 Entity_T *menu;
@@ -64,7 +62,7 @@ void load_map2()
 {
 	if(MAP_FLAG == 14)
 	{
-		oworld = IMG_Load("Overworld2.png");
+		oworld = IMG_Load("BattleMap2.png");
 		MAP_FLAG &= ~2;
 		fprintf(stdout, "%d",MAP_FLAG);
 	}
@@ -73,7 +71,7 @@ void load_map3()
 {
 	if(MAP_FLAG == 12)
 	{
-		oworld = IMG_Load("Overworld3.png");
+		oworld = IMG_Load("BattleMap3.png");
 		MAP_FLAG &= ~4;
 		fprintf(stdout, "%d",MAP_FLAG);
 	}
@@ -139,16 +137,39 @@ void updateGame()
 			return;
 		}
 	}
+	if(Pig->health <= 0)
+	{
+		Death(Pig);
+	}
 	if(mouseHover(menu->bBox.x,menu->bBox.y,menu->bBox.w,menu->bBox.h))
 	{
 		//fprintf(stdout,"its over boy \n");
 		if(clickLeft)
 		{
-			fprintf(stdout,"player attacks \n");
-			AttackPlayer(Pig,Player);
-			fprintf(stdout,"Player hit Pig for: %d \n",Player->damage);
-			fprintf(stdout,"Pig Health Remaining: %d \n", Pig->health);
+			
+			if(Player->alive = true)
+			{
+				fprintf(stdout,"player attacks \n");
+				if(Pig->alive)
+				{
+					AttackPlayer(Pig,Player);
+					fprintf(stdout,"Player hit Pig for: %d \n",Player->damage);
+					fprintf(stdout,"Pig Health Remaining: %d \n \n", Pig->health);
+				}
+			}
+
 			fprintf(stdout,"enemy attacks back \n");
+
+			if(Pig->alive)
+			{
+				AttackPlayer(Player,Pig);
+				fprintf(stdout,"Pig hit player for: %d \n \n",Pig->damage);
+				fprintf(stdout,"Player Health Remaining: %d \n \n", Player->health);
+			}
+
+
+			
+			
 		}
 	}
 }
@@ -160,7 +181,10 @@ void DrawGame()
 		if(IN_BATTLE == true)
 		{ 
 			DrawEntity(menu);
-			DrawEntity(Pig->entity);
+			if(Pig->alive)
+			{
+				DrawEntity(Pig->entity);
+			}
 		}
 		DrawMouse(); //turn off the mouse
 		//update it

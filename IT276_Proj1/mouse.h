@@ -6,6 +6,9 @@
 
 int mx;
 int my;
+bool clickLeft;
+bool clickRight;
+bool stopClick;
 
 void InitMouse();
 void DrawMouse();

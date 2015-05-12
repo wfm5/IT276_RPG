@@ -6,9 +6,11 @@
 #include "sprite.h"
 #include "entity.h"
 #include "globals.h"
+#include "enemy.h"
 
 int NumEntity;
 
+extern Enemy_T* Player;
 /*void InitEntityList()
 {
 	int x;
@@ -47,10 +49,10 @@ void handle_events()
 		switch( e.key.keysym.sym )
 		{
 			//PumpEvents
-			case SDLK_UP: player->y -= WAR_HEIGHT ; printf("%d y \n", player->bBox); break;
-		    case SDLK_DOWN: player->y += WAR_HEIGHT ; printf("%d y \n", player->bBox); break;
-			case SDLK_LEFT: player->x -= WAR_HEIGHT ; printf("%d x \n", player->bBox); break;
-			case SDLK_RIGHT: player->x += WAR_HEIGHT ; printf("%d x \n", player->bBox); break;
+		case SDLK_UP: ((Enemy_T*)Player)->entity->y -= WAR_HEIGHT ; printf("%d y \n", ((Enemy_T*)Player)->entity->bBox); break;
+		case SDLK_DOWN: ((Enemy_T*)Player)->entity->y += WAR_HEIGHT ; printf("%d y \n", ((Enemy_T*)Player)->entity->bBox); break;
+		case SDLK_LEFT: ((Enemy_T*)Player)->entity->x -= WAR_HEIGHT ; printf("%d x \n", ((Enemy_T*)Player)->entity->bBox); break;
+			case SDLK_RIGHT: ((Enemy_T*)Player)->entity->x += WAR_HEIGHT ; printf("%d x \n", ((Enemy_T*)Player)->entity->bBox); break;
 		}			
 	}
 }

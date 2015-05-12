@@ -5,6 +5,7 @@
 #include "entity.h"
 #include "globals.h"
 #include "mouse.h"
+#include "enemy.h"
 #define black_	0x000000
 
 SDL_Rect heroRect;
@@ -14,11 +15,13 @@ SDL_Rect heroRect;
 SDL_Surface* Screen;
 SDL_Surface* oworld;
 SDL_Surface* fmap;
-SDL_Surface* wa;
+
 
 //event variable
 Entity_T *ent;
-Entity_T *player;
+//Entity_T *player;
+Enemy_T *Player;
+Enemy_T *Pig;
 Entity_T *menu;
 Entity_T *doorEnt;
 SDL_Event e;
@@ -90,7 +93,7 @@ void HandleInput()
   }
 }
 
-bool load_files()//USE THIS TO HANDLE SPRITES LATER ON. TAKE A SPRITE AND A VARIABLE AND PUT SPRITE ON VARI
+/*bool load_files()//USE THIS TO HANDLE SPRITES LATER ON. TAKE A SPRITE AND A VARIABLE AND PUT SPRITE ON VARI
 {
     //Load the sprite sheet
     wa = IMG_Load( "warrior.png" );
@@ -107,25 +110,25 @@ bool load_files()//USE THIS TO HANDLE SPRITES LATER ON. TAKE A SPRITE AND A VARI
 
     //If everything loaded fine
     return true;
-}
+}*/
 
 void updateGame()
 {
 	mouseThink();
-	if(is_Collided(player->bBox, doorEnt->bBox))
+	if(is_Collided(((Enemy_T*)Player)->entity->bBox, doorEnt->bBox))
 	{
 		fprintf(stdout, "entered door\n");
 		if(MAP_FLAG == 15)
 		{
 			IN_BATTLE = true;
 			load_battle();
-			Battle_Positions(player);
+			Battle_Positions(((Enemy_T*)Player)->entity);
 		}
 		else if(MAP_FLAG == 14)
 		{
 			IN_BATTLE = false;
 			load_map2();
-			Init_Position(player);
+			Init_Position(((Enemy_T*)Player)->entity);
 		}
 		else if(MAP_FLAG == 12)
 		{
@@ -136,22 +139,28 @@ void updateGame()
 			return;
 		}
 	}
-	if(mouseHover(menu->x,menu->y,menu->width,menu->height))
+	if(mouseHover(menu->bBox.x,menu->bBox.y,menu->bBox.w,menu->bBox.h))
 	{
-		fprintf(stdout,"its over boy \n");
-	}else
-	{
-		fprintf(stdout, "it was false line 144\n");
+		//fprintf(stdout,"its over boy \n");
+		if(clickLeft)
+		{
+			fprintf(stdout,"player attacks \n");
+			AttackPlayer(Pig,Player);
+			fprintf(stdout,"Player hit Pig for: %d \n",Player->damage);
+			fprintf(stdout,"Pig Health Remaining: %d \n", Pig->health);
+			fprintf(stdout,"enemy attacks back \n");
+		}
 	}
 }
 void DrawGame()
 {
 		SDL_BlitSurface(oworld,NULL,Screen,NULL);
-		DrawEntity(player);
+		DrawEntity(((Enemy_T*)Player)->entity);
 		DrawEntity(doorEnt);
 		if(IN_BATTLE == true)
 		{ 
 			DrawEntity(menu);
+			DrawEntity(Pig->entity);
 		}
 		DrawMouse(); //turn off the mouse
 		//update it
@@ -179,10 +188,8 @@ int main (int argc,char* argv[]) //ran after SDL main
 //	SDL_Rect playerRect;
 	SDL_Rect door;
 	SDL_Rect Abutton;
-	SDL_Rect enemyRect;
-	Sprite_T *s;
+	
 	Sprite_T *d;
-	Sprite_T *enemy;
 	Sprite_T *button;
 	IN_BATTLE = false;
 	
@@ -192,20 +199,10 @@ int main (int argc,char* argv[]) //ran after SDL main
 	oworld = IMG_Load("Overworld1.png");
 	MAP_FLAG = 15;
 
-	player = Init_Ent();
-	//Init_Position(player);
-	player->width = 32;
-	player->height = 32;
-
-	player->bBox.x = 31;
-	player->bBox.y = 0;
-	player->bBox.w = 31;
-	player->bBox.h = 32;
-
-	player->sprite = SetupSprite("warrior.png", player->bBox);;
-	//DressUpEntity(player->sprite, player->bBox, player);
-	player->x = 100;
-	player->y = 100;
+//player data was here
+	//PlayerStats(Player);
+	Player = (Enemy_T*)Init_Enemy(1,2,10,true,"warrior.png",10);
+	Pig = (Enemy_T*)Init_Enemy(1,1,6,false,"ppl_mon.png",0);
 	
 	door.x = 770;
 	door.y = 265;

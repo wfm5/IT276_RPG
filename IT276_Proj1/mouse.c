@@ -10,9 +10,7 @@ extern SDL_Surface *Screen;
 
 Sprite_T *Msprite;
 
-int clickLeft;
-int clickRight;
-int stopClick;
+
 struct
 {
   Uint32 state;
@@ -64,8 +62,8 @@ void mouseThink()
 	SDL_GetMouseState(&mx,&my);
 	if(SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT)) //if clicked 
 	{
-		clickLeft = 1;
-		clickRight = 0;
+		clickLeft = true;
+		clickRight = false;
 	}
 	else if (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_RIGHT))
 	{

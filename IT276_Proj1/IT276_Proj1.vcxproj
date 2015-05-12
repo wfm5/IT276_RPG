@@ -85,6 +85,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="enemy.c" />
     <ClCompile Include="entity.c" />
     <ClCompile Include="graphics.c" />
     <ClCompile Include="main.c" />
@@ -93,6 +94,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="defines.h" />
+    <ClInclude Include="enemy.h" />
     <ClInclude Include="entity.h" />
     <ClInclude Include="globals.h" />
     <ClInclude Include="mouse.h" />

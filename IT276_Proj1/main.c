@@ -182,6 +182,8 @@ void Init_All()
 	atexit(CleanUpAll);
 	
 }
+
+// this could be shorter
 int main (int argc,char* argv[]) //ran after SDL main
 {
 	int quit;

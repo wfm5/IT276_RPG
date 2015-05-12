@@ -54,7 +54,7 @@ void handle_events()
 		case SDLK_LEFT: ((Enemy_T*)Player)->entity->x -= WAR_HEIGHT ; printf("%d x \n", ((Enemy_T*)Player)->entity->bBox); break;
 			case SDLK_RIGHT: ((Enemy_T*)Player)->entity->x += WAR_HEIGHT ; printf("%d x \n", ((Enemy_T*)Player)->entity->bBox); break;
 		}			
-	}
+	}// probably should check key up there
 }
 
 Entity_T *DressUpEntity(Sprite_T *s, SDL_Rect box, Entity_T *e)

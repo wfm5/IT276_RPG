@@ -82,3 +82,13 @@ void Death(Enemy_T *self)
 		}
 	}
 }
+void PowerUp(Enemy_T *self)
+{
+	self->damage += 3;
+	self->health += 5;
+}
+void PowerUp2(Enemy_T *self)
+{
+	self->attackRate += 1;
+	self->health += 5;
+}

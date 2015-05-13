@@ -6,6 +6,7 @@
 #include "globals.h"
 #include "mouse.h"
 #include "enemy.h"
+#include "SDL_ttf.h"
 #define black_	0x000000
 
 SDL_Rect heroRect;
@@ -15,11 +16,14 @@ SDL_Rect heroRect;
 SDL_Surface* Screen;
 SDL_Surface* oworld;
 
-
+SDL_Color color={0,0,0};
+TTF_Font *font;
+SDL_Surface *text_surface;
 //event variable
 Entity_T *ent;
 Enemy_T *Player;
 Enemy_T *Pig;
+Enemy_T *Pig2;
 Entity_T *menu;
 Entity_T *doorEnt;
 SDL_Event e;
@@ -53,9 +57,9 @@ void load_battle()
 {
 	if(MAP_FLAG == 15)
 	{
-	oworld = IMG_Load("BattleMap1.png");
-	MAP_FLAG &= ~1; 
-	fprintf(stdout, "%d",MAP_FLAG);
+		oworld = IMG_Load("BattleMap1.png");
+		MAP_FLAG &= ~1; 
+		//fprintf(stdout, "%d",MAP_FLAG);
 	}
 }
 void load_map2()
@@ -64,7 +68,7 @@ void load_map2()
 	{
 		oworld = IMG_Load("BattleMap2.png");
 		MAP_FLAG &= ~2;
-		fprintf(stdout, "%d",MAP_FLAG);
+		//fprintf(stdout, "%d",MAP_FLAG);
 	}
 }
 void load_map3()
@@ -112,6 +116,16 @@ void HandleInput()
 
 void updateGame()
 {
+	if(!(text_surface=TTF_RenderText_Solid(font,"Hello World!",color))) 
+	{
+    //handle error here, perhaps print TTF_GetError at least
+	}else 
+	{
+    SDL_BlitSurface(text_surface,NULL,Screen,NULL);
+    //perhaps we can reuse it, but I assume not for simplicity.
+    SDL_FreeSurface(text_surface);
+	}
+
 	mouseThink();
 	if(is_Collided(((Enemy_T*)Player)->entity->bBox, doorEnt->bBox))
 	{
@@ -124,7 +138,6 @@ void updateGame()
 		}
 		else if(MAP_FLAG == 14)
 		{
-			IN_BATTLE = false;
 			load_map2();
 			Init_Position(((Enemy_T*)Player)->entity);
 		}
@@ -140,6 +153,7 @@ void updateGame()
 	if(Pig->health <= 0)
 	{
 		Death(Pig);
+		load_map2();
 	}
 	if(mouseHover(menu->bBox.x,menu->bBox.y,menu->bBox.w,menu->bBox.h))
 	{
@@ -165,11 +179,7 @@ void updateGame()
 				AttackPlayer(Player,Pig);
 				fprintf(stdout,"Pig hit player for: %d \n \n",Pig->damage);
 				fprintf(stdout,"Player Health Remaining: %d \n \n", Player->health);
-			}
-
-
-			
-			
+			}			
 		}
 	}
 }
@@ -181,10 +191,21 @@ void DrawGame()
 		if(IN_BATTLE == true)
 		{ 
 			DrawEntity(menu);
-			if(Pig->alive)
+			if(MAP_FLAG == 14)
 			{
-				DrawEntity(Pig->entity);
+				if(Pig->alive)
+				{
+					DrawEntity(Pig->entity);
+				}
 			}
+			if(MAP_FLAG == 12)
+			{
+				if(Pig2->alive)
+				{
+					DrawEntity(Pig2->entity);
+				}
+			}
+			
 		}
 		DrawMouse(); //turn off the mouse
 		//update it
@@ -227,7 +248,8 @@ int main (int argc,char* argv[]) //ran after SDL main
 	//PlayerStats(Player);
 	Player = (Enemy_T*)Init_Enemy(1,2,10,true,"warrior.png",10);
 	Pig = (Enemy_T*)Init_Enemy(1,1,6,false,"ppl_mon.png",0);
-	
+	Pig2 = (Enemy_T*)Init_Enemy(1,2,10,false,"ppl_mon.png",0);
+
 	door.x = 770;
 	door.y = 265;
 	door.w = 20;

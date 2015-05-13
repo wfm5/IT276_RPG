@@ -227,6 +227,8 @@ void Init_All()
 	atexit(CleanUpAll);
 	
 }
+
+// this could be shorter
 int main (int argc,char* argv[]) //ran after SDL main
 {
 	int quit;
@@ -244,8 +246,6 @@ int main (int argc,char* argv[]) //ran after SDL main
 	oworld = IMG_Load("Overworld1.png");
 	MAP_FLAG = 15;
 
-//player data was here
-	//PlayerStats(Player);
 	Player = (Enemy_T*)Init_Enemy(1,2,10,true,"warrior.png",10);
 	Pig = (Enemy_T*)Init_Enemy(1,1,6,false,"ppl_mon.png",0);
 	Pig2 = (Enemy_T*)Init_Enemy(1,2,10,false,"ppl_mon.png",0);

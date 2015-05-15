@@ -46,9 +46,7 @@ int checkClick(Entity_T *b)
 	}
 	return 0;
 }
-/*draws to the screen immediately before the blit, after all
- *     it wouldn't be a very good mouse if it got covered up by the
- *     game content*/
+
 void DrawMouse()
 {
   SDL_GetMouseState(&mx,&my);

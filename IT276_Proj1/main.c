@@ -19,47 +19,39 @@ SDL_Surface* oworld;
 SDL_Color color={0,0,0};
 TTF_Font *font;
 SDL_Surface *text_surface;
+
 //event variable
 Entity_T *ent;
 Enemy_T *Player;
 Enemy_T *Pig;
 Enemy_T *Pig2;
+Enemy_T *Pig3;
 Entity_T *menu;
+Entity_T *menu2;
 Entity_T *doorEnt;
+
+Sprite_T *button;
+
 SDL_Event e;
 
 
 int offSet; 
 int MAP_FLAG;
+int up;
+int quit;
 bool IN_BATTLE;
 	
 //Handles input 
 void handle_events(); 
 void updateGame();
-/*void move(Entity_T *ent)
-{
 
-	ent->x += ent->xVel;
 
-	if( ( ent->x < 0 ) || ( ent->x + (float)ent->width > SCREEN_WIDTH ) ) 
-	{ 
-		ent->x -= ent->xVel; 
-	}
-
-	ent->y += ent->yVel;
-
-	if((ent->y < 0) || (ent->y + (float)ent->height > SCREEN_HEIGHT))
-	{
-		ent->y -= ent->xVel;
-	}
-}*/
 void load_battle()
 {
 	if(MAP_FLAG == 15)
 	{
 		oworld = IMG_Load("BattleMap1.png");
 		MAP_FLAG &= ~1; 
-		//fprintf(stdout, "%d",MAP_FLAG);
 	}
 }
 void load_map2()
@@ -68,7 +60,6 @@ void load_map2()
 	{
 		oworld = IMG_Load("BattleMap2.png");
 		MAP_FLAG &= ~2;
-		//fprintf(stdout, "%d",MAP_FLAG);
 	}
 }
 void load_map3()
@@ -76,9 +67,65 @@ void load_map3()
 	if(MAP_FLAG == 12)
 	{
 		oworld = IMG_Load("BattleMap3.png");
-		MAP_FLAG &= ~4;
-		fprintf(stdout, "%d",MAP_FLAG);
+		MAP_FLAG &= ~4; //8
 	}
+}
+void load_map4()
+{
+	if(MAP_FLAG == 8)
+	{
+		oworld = IMG_Load("YouWin.png");
+		MAP_FLAG &= ~8; 
+		fprintf(stdout,"%d",MAP_FLAG);
+	}
+}
+void end_game()
+{
+	if(MAP_FLAG == 0)
+	{
+		quit = true;
+	}
+}
+
+Entity_T MakeButton(char* buttonname,float bx, float by)
+{
+	SDL_Rect Abutton;
+	menu = Init_Ent();
+	Abutton.x = 220;
+	Abutton.y = 190;
+	Abutton.h = 32;
+	Abutton.w = 60;
+
+	menu->bBox.w = 60;
+	menu->bBox.h = 32;
+
+	button = SetupSprite(buttonname,menu->bBox);
+	menu->sprite = button;
+	menu = DressUpEntity(button,Abutton,menu);
+	menu->x = bx;
+	menu->y = by;
+
+	return *menu;
+}
+Entity_T MakeButton2(char* buttonname,float bx, float by) //repeating this for last minute changes
+{
+	SDL_Rect Sbutton;
+	menu2 = Init_Ent();
+	Sbutton.x = 220;
+	Sbutton.y = 190;
+	Sbutton.h = 32;
+	Sbutton.w = 60;
+
+	menu2->bBox.w = 60;
+	menu2->bBox.h = 32;
+
+	button = SetupSprite(buttonname,menu2->bBox);
+	menu2->sprite = button;
+	menu2 = DressUpEntity(button,Sbutton,menu2);
+	menu2->x = bx;
+	menu2->y = by;
+
+	return *menu2;
 }
 
 void HandleInput()
@@ -90,29 +137,14 @@ void HandleInput()
   {
 	if(checkClick(menu))
 	{
-		fprintf(stdout,"Clicky");//activate button
+		//fprintf(stdout,"Clicky");//activate button
+	}
+	if(checkClick(menu2))
+	{
+		//fprintf(stdout,"clicky");
 	}
   }
 }
-
-/*bool load_files()//USE THIS TO HANDLE SPRITES LATER ON. TAKE A SPRITE AND A VARIABLE AND PUT SPRITE ON VARI
-{
-    //Load the sprite sheet
-    wa = IMG_Load( "warrior.png" );
-	//heroRect.x = 0;
-	//heroRect.y = 0;
-	//heroRect.w = 0;
-	//heroRect.h = 0;
-
-    //If there was a problem in loading the sprite
-    if( wa == NULL )
-    {
-        return false;
-    }
-
-    //If everything loaded fine
-    return true;
-}*/
 
 void updateGame()
 {
@@ -127,6 +159,7 @@ void updateGame()
 	}
 
 	mouseThink();
+
 	if(is_Collided(((Enemy_T*)Player)->entity->bBox, doorEnt->bBox))
 	{
 		fprintf(stdout, "entered door\n");
@@ -145,19 +178,38 @@ void updateGame()
 		{
 			load_map3();
 		}
+		else if(MAP_FLAG == 8)
+		{
+			load_map4();
+		}
 		else
 		{
+			end_game();
 			return;
 		}
 	}
 	if(Pig->health <= 0)
 	{
 		Death(Pig);
+		Pig2->alive = true;
+		PowerUp(Player);
 		load_map2();
+	}
+	if(Pig2->health <= 0)
+	{
+		Death(Pig2);
+		Pig3->alive = true;
+		PowerUp2(Player);
+		load_map3();
+	}
+	if(Pig3->health <= 0)
+	{
+		Death(Pig3);
+		IN_BATTLE = false;
+		load_map4();
 	}
 	if(mouseHover(menu->bBox.x,menu->bBox.y,menu->bBox.w,menu->bBox.h))
 	{
-		//fprintf(stdout,"its over boy \n");
 		if(clickLeft)
 		{
 			
@@ -170,6 +222,18 @@ void updateGame()
 					fprintf(stdout,"Player hit Pig for: %d \n",Player->damage);
 					fprintf(stdout,"Pig Health Remaining: %d \n \n", Pig->health);
 				}
+				if(Pig2->alive)
+				{
+					AttackPlayer(Pig2,Player);
+					fprintf(stdout,"Player hit Pig for: %d \n",Player->damage);
+					fprintf(stdout,"Crawler Health Remaining: %d \n \n", Pig2->health);
+				}
+				if(Pig3->alive)
+				{
+					AttackPlayer(Pig3,Player);
+					fprintf(stdout,"Player hit Pig for: %d \n",Player->damage);
+					fprintf(stdout,"King Health Remaining: %d \n \n", Pig3->health);
+				}
 			}
 
 			fprintf(stdout,"enemy attacks back \n");
@@ -180,6 +244,73 @@ void updateGame()
 				fprintf(stdout,"Pig hit player for: %d \n \n",Pig->damage);
 				fprintf(stdout,"Player Health Remaining: %d \n \n", Player->health);
 			}			
+			if(Pig2->alive)
+			{
+				AttackPlayer(Player,Pig2);
+				fprintf(stdout,"Crawler hit player for: %d \n \n",Pig2->damage);
+				fprintf(stdout,"Player Health Remaining: %d \n \n", Player->health);
+			}
+			if(Pig3->alive)
+			{
+				AttackPlayer(Player,Pig3);
+				fprintf(stdout,"King hit player for: %d \n \n",Pig3->damage);
+				fprintf(stdout,"Player Health Remaining: %d \n \n", Player->health);
+			}	
+		}
+	}
+	if(mouseHover(menu2->bBox.x,menu2->bBox.y,menu2->bBox.w,menu2->bBox.h))
+	{
+		if(clickLeft)
+		{
+			
+			if(Player->alive = true && Player->mana > 0)
+			{
+				fprintf(stdout,"player attacks \n");
+				if(Pig->alive)
+				{
+					AttackPlayer2(Pig,Player);
+					fprintf(stdout,"Player hit Pig for: %d magic damage\n",(Player->mana)+2);
+					fprintf(stdout,"Pig Health Remaining: %d \n \n", Pig->health);
+				}
+				if(Pig2->alive)
+				{
+					AttackPlayer2(Pig2,Player);
+					fprintf(stdout,"Player hit Pig for: %d magic damage \n",(Player->mana)+2);
+					fprintf(stdout,"Crawler Health Remaining: %d \n \n", Pig2->health);
+				}
+				if(Pig3->alive)
+				{
+					AttackPlayer2(Pig3,Player);
+					fprintf(stdout,"Player hit Pig for: %d \n",(Player->mana)+2);
+					fprintf(stdout,"King Health Remaining: %d \n \n", Pig3->health);
+				}
+
+				fprintf(stdout,"enemy attacks back \n");
+
+				if(Pig->alive)
+				{
+					AttackPlayer(Player,Pig);
+					fprintf(stdout,"Pig hit player for: %d \n \n",Pig->damage);
+					fprintf(stdout,"Player Health Remaining: %d \n \n", Player->health);
+				}			
+				if(Pig2->alive)
+				{
+					AttackPlayer(Player,Pig2);
+					fprintf(stdout,"Crawler hit player for: %d \n \n",Pig2->damage);
+					fprintf(stdout,"Player Health Remaining: %d \n \n", Player->health);
+				}
+				if(Pig3->alive)
+				{
+					AttackPlayer(Player,Pig3);
+					AttackPlayer(Player,Pig3);
+					RegenSelf(Pig3);
+					fprintf(stdout,"King healed a small ammount of health \n");
+					fprintf(stdout,"King hit player for: %d \n \n",(Pig3->damage)*2);
+					fprintf(stdout,"Player Health Remaining: %d \n \n", Player->health);
+				}	
+			}else{
+				fprintf(stdout,"You don't have enough mana to deal damage. \n");
+			}
 		}
 	}
 }
@@ -191,6 +322,7 @@ void DrawGame()
 		if(IN_BATTLE == true)
 		{ 
 			DrawEntity(menu);
+			DrawEntity(menu2);
 			if(MAP_FLAG == 14)
 			{
 				if(Pig->alive)
@@ -205,7 +337,13 @@ void DrawGame()
 					DrawEntity(Pig2->entity);
 				}
 			}
-			
+			if(MAP_FLAG == 8)
+			{
+				if(Pig3->alive)
+				{
+					DrawEntity(Pig3->entity);
+				}
+			}
 		}
 		DrawMouse(); //turn off the mouse
 		//update it
@@ -221,7 +359,7 @@ void CleanUpAll()
 void Init_All()
 {
 	SDL_Init(SDL_INIT_EVERYTHING); //inits everything for sdl
-	//InitEntityList();
+	InitEntityList();
 	InitSpriteList();
 	InitMouse();	
 	atexit(CleanUpAll);
@@ -229,15 +367,15 @@ void Init_All()
 }
 
 // this could be shorter
+// wfm5: I got rid of some of the button crap
 int main (int argc,char* argv[]) //ran after SDL main
 {
-	int quit;
 //	SDL_Rect playerRect;
 	SDL_Rect door;
-	SDL_Rect Abutton;
+	
 	
 	Sprite_T *d;
-	Sprite_T *button;
+	
 	IN_BATTLE = false;
 	
 	Init_All();
@@ -246,9 +384,14 @@ int main (int argc,char* argv[]) //ran after SDL main
 	oworld = IMG_Load("Overworld1.png");
 	MAP_FLAG = 15;
 
-	Player = (Enemy_T*)Init_Enemy(1,2,10,true,"warrior.png",10);
-	Pig = (Enemy_T*)Init_Enemy(1,1,6,false,"ppl_mon.png",0);
-	Pig2 = (Enemy_T*)Init_Enemy(1,2,10,false,"ppl_mon.png",0);
+	Player = (Enemy_T*)Init_Enemy(1,2,10,true,"warrior.png",10,9);
+	Pig = (Enemy_T*)Init_Enemy(1,1,6,false,"ppl_mon.png",0,0);
+	Pig2 = (Enemy_T*)Init_Enemy(1,2,10,false,"ppl_mon.png",0,1);
+	Pig3 = (Enemy_T*)Init_Enemy(1,3,15,false,"ppl_mon.png",0,2);
+	Pig2->alive = false;
+	Pig3->alive = false;
+	MakeButton("button_attack.png",158,68);
+	MakeButton2("button_spell.png",158,110);
 
 	door.x = 770;
 	door.y = 265;
@@ -265,20 +408,7 @@ int main (int argc,char* argv[]) //ran after SDL main
 	doorEnt->x = 770;
 	doorEnt->y = 265;
 
-	menu = Init_Ent();
-	Abutton.x = 220;
-	Abutton.y = 190;
-	Abutton.h = 32;
-	Abutton.w = 60;
 
-	menu->bBox.w = 60;
-	menu->bBox.h = 32;
-
-	button = SetupSprite("button_attack.png",menu->bBox);
-	menu->sprite = button;
-	menu = DressUpEntity(button,Abutton,menu);
-	menu->x = 158;
-	menu->y = 98;
 	//LoadSprite("mouse.png",16,16);
 	quit = false;
 

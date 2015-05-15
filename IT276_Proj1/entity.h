@@ -42,6 +42,7 @@ typedef struct Entity_S{
 
 Entity_T entityList[MAX_ENTITIES];
 Entity_T *Init_Ent(void);
+void InitEntityList();
 void Free_Ent(Entity_T *self);
 
 void move(Entity_T *e);

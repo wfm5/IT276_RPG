@@ -11,14 +11,15 @@
 int NumEntity;
 
 extern Enemy_T* Player;
-/*void InitEntityList()
+void InitEntityList()
 {
 	int x;
 	NumEntity = 0;
 	memset(entityList,0,sizeof(Entity_T) * MAX_ENTITIES);
-	for(x = 0;x < MAX_ENTITIES;x++) 
-		entityList[x] = NULL;
-}*/
+	for(x = 0;x < MAX_ENTITIES;x++){
+		entityList[x].inuse = 0;
+	}
+}
 Entity_T *Init_Ent(void)
 {
 	int i;
@@ -54,7 +55,8 @@ void handle_events()
 			case SDLK_LEFT: ((Enemy_T*)Player)->entity->x -= WAR_HEIGHT ; break;
 			case SDLK_RIGHT: ((Enemy_T*)Player)->entity->x += WAR_HEIGHT ;  break;
 		}			
-	}// probably should check key up there
+	}
+	// probably should check key up there
 }
 
 Entity_T *DressUpEntity(Sprite_T *s, SDL_Rect box, Entity_T *e)

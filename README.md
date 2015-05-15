@@ -1,5 +1,5 @@
 # IT276_RPG
-#How to play RPG Simulator (Beta)
+#How to play RPG Simulator(?) (Beta)
 Movement is binded to the arrow keys.
 While in battle, click on attack do a physical attack.
 Click on spell to use mana to attack.
